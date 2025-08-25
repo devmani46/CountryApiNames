@@ -3,22 +3,25 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
 type CountryResponse = {
-  name: {
-    common: string;
-    official: string;
-  };
+  name: { common: string };
 };
 
 @Injectable({ providedIn: 'root' })
 export class Country {
-  private base = 'https://restcountries.com/v3.1/name';
+  private baseAll = 'https://restcountries.com/v3.1/all?fields=name';
+  private baseByName = 'https://restcountries.com/v3.1/name/';
 
   constructor(private http: HttpClient) {}
 
-  getCountryNames(query: string): Observable<string[]> {
-    const url = `${this.base}/${encodeURIComponent(query)}?fields=name`;
-    return this.http.get<CountryResponse[]>(url).pipe(
-      map(arr => (arr || []).map(c => c.name.common))
+  getAllCountryNames(): Observable<string[]> {
+    return this.http.get<CountryResponse[]>(this.baseAll).pipe(
+      map(arr => arr.map(c => c.name.common).sort())
+    );
+  }
+
+  getCountryNames(q: string): Observable<string[]> {
+    return this.http.get<CountryResponse[]>(`${this.baseByName}${q}?fields=name`).pipe(
+      map(arr => arr.map(c => c.name.common).sort())
     );
   }
 }

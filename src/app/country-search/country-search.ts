@@ -35,7 +35,6 @@ export class CountrySearch {
         this.loading = false;
       },
       error: () => {
-        // REST Countries returns 404 if nothing matches
         this.error = 'No countries found.';
         this.loading = false;
       }
