@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ElementRef, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ElementRef, OnDestroy, HostListener, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './combobox.html',
   styleUrls: ['./combobox.scss']
 })
-export class Combobox implements OnDestroy {
+export class Combobox implements OnDestroy, AfterViewInit {
   @Input() options: string[] = [];
   @Input() placeholder: string = 'Select an option';
   @Input() searchable: boolean = true;
@@ -22,12 +22,19 @@ export class Combobox implements OnDestroy {
   selected: string | null = null;
 
   highlightedIndex: number = -1;
+
+  @ViewChildren('optionItem') optionItems!: QueryList<ElementRef>;
+
   constructor(private elementRef: ElementRef) {}
 
+  ngAfterViewInit() {
+    this.optionItems.changes.subscribe(() => {
+      this.scrollHighlightedIntoView();
+    });
+  }
+
   get filteredOptions(): string[] {
-    if (!this.searchable || !this.searchText.trim()) {
-      return this.options;
-    }
+    if (!this.searchable || !this.searchText.trim()) return this.options;
     return this.options.filter(o =>
       o.toLowerCase().includes(this.searchText.toLowerCase())
     );
@@ -36,6 +43,9 @@ export class Combobox implements OnDestroy {
   openDropdown(): void {
     this.isOpen = true;
     this.highlightedIndex = -1;
+    if (!this.searchText && this.selected) {
+      this.searchText = this.selected;
+    }
   }
 
   toggleDropdown(): void {
@@ -52,8 +62,21 @@ export class Combobox implements OnDestroy {
     if (this.disabledOptions.includes(option)) return;
     this.selected = option;
     this.valueChange.emit(option);
+    this.searchText = option;
     this.closeDropdown();
-    this.searchText = '';
+  }
+
+  onInputChange(value: string) {
+    this.searchText = value;
+
+    if (!value.trim()) {
+      this.selected = null;
+      this.highlightedIndex = -1;
+    }
+
+    if (!this.isOpen) {
+      this.openDropdown();
+    }
   }
 
   isDisabled(option: string): boolean {
@@ -66,47 +89,53 @@ export class Combobox implements OnDestroy {
       this.closeDropdown();
     }
   }
-@HostListener('document:keydown.escape', ['$event'])
-onEscapePress(event: Event) {
-  const keyboardEvent = event as KeyboardEvent;
-  if (this.isOpen) {
-    this.closeDropdown();
-    keyboardEvent.stopPropagation();
-  }
-}
 
-@HostListener('document:keydown', ['$event'])
-onKeyDown(event: Event) {
-  if (!this.isOpen) return;
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent) {
+    if (!this.isOpen) return;
 
-  const keyboardEvent = event as KeyboardEvent;
-  const options = this.filteredOptions;
+    const options = this.filteredOptions;
 
-  if (keyboardEvent.key === 'ArrowDown') {
-    keyboardEvent.preventDefault();
-    if (this.highlightedIndex < options.length - 1) {
-      this.highlightedIndex++;
-    } else {
-      this.highlightedIndex = 0;
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.highlightedIndex = (this.highlightedIndex + 1) % options.length;
+        this.scrollHighlightedIntoView();
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        this.highlightedIndex =
+          this.highlightedIndex > 0 ? this.highlightedIndex - 1 : options.length - 1;
+        this.scrollHighlightedIntoView();
+        break;
+
+      case 'Enter':
+        event.preventDefault();
+        if (this.highlightedIndex >= 0 && this.highlightedIndex < options.length) {
+          this.selectOption(options[this.highlightedIndex]);
+        }
+        break;
+
+      case 'Escape':
+        event.preventDefault();
+        this.isOpen = false;
+        this.highlightedIndex = -1;
+        break;
     }
   }
 
-  if (keyboardEvent.key === 'ArrowUp') {
-    keyboardEvent.preventDefault();
-    if (this.highlightedIndex > 0) {
-      this.highlightedIndex--;
-    } else {
-      this.highlightedIndex = options.length - 1;
-    }
+  scrollHighlightedIntoView() {
+    setTimeout(() => {
+      const items = this.optionItems.toArray();
+      if (items[this.highlightedIndex]) {
+        items[this.highlightedIndex].nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      }
+    }, 0);
   }
-
-  if (keyboardEvent.key === 'Enter') {
-    keyboardEvent.preventDefault();
-    if (this.highlightedIndex >= 0 && this.highlightedIndex < options.length) {
-      this.selectOption(options[this.highlightedIndex]);
-    }
-  }
-}
 
   ngOnDestroy(): void {
     this.closeDropdown();

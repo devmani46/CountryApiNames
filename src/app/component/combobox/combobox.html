@@ -2,10 +2,12 @@
   <div class="combobox-input">
     @if (searchable) {
       <input
-        [(ngModel)]="searchText"
-        [placeholder]="selected || placeholder"
+        [ngModel]="searchText"
+        (ngModelChange)="onInputChange($event)"
+        [placeholder]="placeholder"
         (focus)="openDropdown()"
       />
+
     } @else {
       <div class="non-searchable" (click)="toggleDropdown()">
         {{ selected || placeholder }}
@@ -17,7 +19,6 @@
     </span>
   </div>
 
-
   <ul
     class="combobox-options fw-listbox"
     [class.open]="isOpen"
@@ -25,6 +26,7 @@
   >
     @for (option of filteredOptions; let i = $index; track option) {
       <li
+        #optionItem
         (click)="selectOption(option)"
         [class.disabled]="isDisabled(option)"
         [class.highlighted]="i === highlightedIndex"
