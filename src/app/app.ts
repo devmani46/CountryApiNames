@@ -1,11 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { CountrySearch} from './country-search/country-search';
 
 @Component({
   selector: 'app-root',
-  imports: [],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  standalone: true,
+  imports: [CountrySearch],
+  template: `<app-country-search />`
 })
-export class App {
-  protected readonly title = signal('country-finder');
-}
+export class App {}

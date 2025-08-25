@@ -1,0 +1,24 @@
+<div class="wrapper">
+  <h2>Country Name Search</h2>
+
+  <div class="controls">
+    <input
+      type="text"
+      [(ngModel)]="query"
+      placeholder="Type a country (e.g., nepal or united)"
+      (keyup.enter)="search()"
+    />
+    <button (click)="search()">Search</button>
+  </div>
+
+  <p *ngIf="loading">Loading...</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <ul *ngIf="!loading && !error && names.length">
+    <li *ngFor="let n of names">{{ n }}</li>
+  </ul>
+
+  <p *ngIf="!loading && !error && !names.length && query">
+    No results yet. Try a different term.
+  </p>
+</div>
