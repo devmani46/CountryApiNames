@@ -24,6 +24,11 @@
     [class.open]="isOpen"
     [class.closed]="!isOpen"
   >
+
+    @if (filteredOptions.length === 0) {
+      <li class="no-result disabled">No result found</li>
+    }
+
     @for (option of filteredOptions; let i = $index; track option) {
       <li
         #optionItem

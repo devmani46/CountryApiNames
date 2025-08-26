@@ -176,4 +176,14 @@
     background: #007bff;
     color: #fff;
   }
+    li.no-result {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+    cursor: default;
+    background: #fff;
+    pointer-events: none;
+  }
+
+
 }
