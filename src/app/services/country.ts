@@ -19,9 +19,9 @@ export class Country {
     );
   }
 
-  getCountryNames(q: string): Observable<string[]> {
-    return this.http.get<CountryResponse[]>(`${this.baseByName}${q}?fields=name`).pipe(
-      map(arr => arr.map(c => c.name.common).sort())
-    );
-  }
+  // getCountryNames(q: string): Observable<string[]> {
+  //   return this.http.get<CountryResponse[]>(`${this.baseByName}${q}?fields=name`).pipe(
+  //     map(arr => arr.map(c => c.name.common).sort())
+  //   );
+  // }
 }
