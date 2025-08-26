@@ -15,9 +15,11 @@ export class App implements OnInit {
   title = 'Country Combobox';
 
   countries: string[] = [];
-  selectedCountry1: string | null = null;
-  selectedCountry2: string | null = null;
-  selectedCountry3: string | null = null;
+  // selectedCountry1: string | null = null;
+  // selectedCountry2: string | null = null;
+  // selectedCountry3: string | null = null;
+
+    selectedCountries: (string | null)[] = [];
 
   constructor(private country: Country) {}
 
@@ -25,6 +27,7 @@ export class App implements OnInit {
     this.country.getAllCountryNames().subscribe({
       next: (names) => {
         this.countries = names;
+
       },
       error: (err) => {
         console.error('Error loading countries:', err);
@@ -32,20 +35,24 @@ export class App implements OnInit {
     });
   }
 
-  onCountrySelected1(country: string): void {
-    this.selectedCountry1 = country;
-    console.log('Selected country:', country);
+    onCountrySelected(index: number, country: string): void {
+    this.selectedCountries[index] = country;
   }
 
-  onCountrySelected2(country: string): void {
-    this.selectedCountry2 = country;
-    console.log('Selected country:', country);
-  }
+  // onCountrySelected1(country: string): void {
+  //   this.selectedCountry1 = country;
+  //   console.log('Selected country:', country);
+  // }
 
-   onCountrySelected3(country: string): void {
-    this.selectedCountry3 = country;
-    console.log('Selected country:', country);
-  }
+  // onCountrySelected2(country: string): void {
+  //   this.selectedCountry2 = country;
+  //   console.log('Selected country:', country);
+  // }
+
+  //  onCountrySelected3(country: string): void {
+  //   this.selectedCountry3 = country;
+  //   console.log('Selected country:', country);
+  // }
 }
 
 
