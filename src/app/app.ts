@@ -15,7 +15,9 @@ export class App implements OnInit {
   title = 'Country Combobox';
 
   countries: string[] = [];
-  selectedCountry: string | null = null;
+  selectedCountry1: string | null = null;
+  selectedCountry2: string | null = null;
+  selectedCountry3: string | null = null;
 
   constructor(private country: Country) {}
 
@@ -30,8 +32,18 @@ export class App implements OnInit {
     });
   }
 
-  onCountrySelected(country: string): void {
-    this.selectedCountry = country;
+  onCountrySelected1(country: string): void {
+    this.selectedCountry1 = country;
+    console.log('Selected country:', country);
+  }
+
+  onCountrySelected2(country: string): void {
+    this.selectedCountry2 = country;
+    console.log('Selected country:', country);
+  }
+
+   onCountrySelected3(country: string): void {
+    this.selectedCountry3 = country;
     console.log('Selected country:', country);
   }
 }
