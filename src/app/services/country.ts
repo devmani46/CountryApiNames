@@ -9,7 +9,7 @@ type CountryResponse = {
 @Injectable({ providedIn: 'root' })
 export class Country {
   private baseAll = 'https://restcountries.com/v3.1/all?fields=name';
-  private baseByName = 'https://restcountries.com/v3.1/name/';
+  // private baseByName = 'https://restcountries.com/v3.1/name/';
 
   constructor(private http: HttpClient) {}
 
